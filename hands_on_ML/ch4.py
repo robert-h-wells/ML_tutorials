@@ -29,7 +29,7 @@ np.linalg.pinv(X_b).dot(y)
 
 
 #========================= Gradient Descent ===============================#
-
+# check
 #== Batch Gradient Descent ==#
 eta = 0.1  # learning rate
 n_iterations = 1000
