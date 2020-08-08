@@ -81,6 +81,30 @@ lin_reg = LinearRegression()
 lin_reg.fit(X_poly, y)
 lin_reg.intercept_, lin_reg.coef_
 
+# Ridge Regression
+from sklearn.linear_model import Ridge
+ridge_reg = Ridge(alpha=1, solver="cholesky")
+ridge_reg.fit(X, y
+ridge_reg.predict([[1.5]])
+
+# SGD Ridge Regression
+sgd_reg = SGDRegressor(penalty="l2")
+sgd_reg.fit(X, y.ravel())
+sgd_reg.predict([[1.5]])
+
+# Lasso Regression
+from sklearn.linear_model import Lasso
+lasso_reg = Lasso(alpha=0.1)
+
+# Elastic Net
+from sklearn.linear_model import ElasticNet
+elastic_net = ElasticNet(alpha=0.1, l1_ratio=0.5)
+
+# Logistic Regression
+from sklearn.linear_model import LogisticRegression
+log_reg = LogisticRegression()
+log_reg.fit(X, y)
+
 #======================================================================================#
 # Grid search to find the best hyperparameters 
 # This example uses the RandomForestRegressor
@@ -154,5 +178,74 @@ y_train_odd = (y_train % 2 == 1)
 y_multilabel = np.c_[y_train_large, y_train_odd]
 knn_clf = KNeighborsClassifier()
 knn_clf.fit(X_train, y_multilabel)
+
+#======================================================================================#
+# Learning Curves
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+
+def plot_learning_curves(model, X, y):
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
+    train_errors, val_errors = [], []
+    for m in range(1, len(X_train)):
+        model.fit(X_train[:m], y_train[:m])
+        y_train_predict = model.predict(X_train[:m])
+        y_val_predict = model.predict(X_val)
+        train_errors.append(mean_squared_error(y_train[:m], y_train_predict))
+        val_errors.append(mean_squared_error(y_val, y_val_predict))
+    plt.plot(np.sqrt(train_errors), "r-+", linewidth=2, label="train")
+    plt.plot(np.sqrt(val_errors), "b-", linewidth=3, label="val")
+
+#======================================================================================#
+# Linear SVM
+svm_clf = Pipeline([
+        ("scaler", StandardScaler()),
+        ("linear_svc", LinearSVC(C=1, loss="hinge")),
+    ])
+
+svm_clf.fit(X, y)
+
+# Nonlinear SVM
+polynomial_svm_clf = Pipeline([
+        ("poly_features", PolynomialFeatures(degree=3)),
+        ("scaler", StandardScaler()),
+        ("svm_clf", LinearSVC(C=10, loss="hinge"))
+    ])
+
+polynomial_svm_clf.fit(X, y)
+
+# Polynomial Kernel 
+from sklearn.svm import SVC
+
+# Gaussian RBF Kernel
+rbf_kernel_svm_clf = Pipeline([
+        ("scaler", StandardScaler()),
+        ("svm_clf", SVC(kernel="rbf", gamma=5, C=0.001))
+    ])
+rbf_kernel_svm_clf.fit(X, y)
+
+# SVM Regression
+from sklearn.svm import LinearSVR
+svm_reg = LinearSVR(epsilon=1.5)
+svm_reg.fit(X, y)
+
+# Poly SVM Regression
+from sklearn.svm import SVR
+svm_poly_reg = SVR(kernel="poly", degree=2, C=100, epsilon=0.1)
+svm_poly_reg.fit(X, y
+
+#======================================================================================#
+# Decision Tree Classifier
+from sklearn.tree import DecisionTreeClassifier
+tree_clf = DecisionTreeClassifier(max_depth=2)
+tree_clf.fit(X, y)
+
+# Predict Probabilities
+tree_clf.predict_proba([[5, 1.5]])
+
+# Decision Tree Regression
+from sklearn.tree import DecisionTreeRegressor
+tree_reg = DecisionTreeRegressor(max_depth=2)
+tree_reg.fit(X, y)
 
 #======================================================================================#
