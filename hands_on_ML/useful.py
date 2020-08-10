@@ -360,3 +360,9 @@ dbscan = DBSCAN(eps=0.05, min_samples=5)
 dbscan.fit(X)
 
 #======================================================================================#
+# Gaussian Mixtures
+from sklearn.mixture import GaussianMixture
+gm = GaussianMixture(n_components=3, n_init=10)
+gm.fit(X)
+
+#======================================================================================#
