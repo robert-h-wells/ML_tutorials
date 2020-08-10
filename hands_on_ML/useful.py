@@ -297,3 +297,66 @@ from sklearn.ensemble import GradientBoostingRegressor
 gbrt = GradientBoostingRegressor(max_depth=2, n_estimators=3, learning_rate=1.0)
 gbrt.fit(X, y)
 #======================================================================================#
+# PCA
+from sklearn.decomposition import PCA
+pca = PCA(n_components = 2)
+X2D = pca.fit_transform(X)
+pca.explained_variance_ratio_
+
+# Randomized PCA
+rnd_pca = PCA(n_components=154, svd_solver="randomized")
+X_reduced = rnd_pca.fit_transform(X_train)
+
+# Incremental PCA
+from sklearn.decomposition import IncrementalPCA
+n_batches = 100
+inc_pca = IncrementalPCA(n_components=154)
+for X_batch in np.array_split(X_train, n_batches):
+    inc_pca.partial_fit(X_batch)
+
+X_reduced = inc_pca.transform(X_train)
+
+# Kernel PCA
+from sklearn.decomposition import KernelPCA
+rbf_pca = KernelPCA(n_components = 2, kernel="rbf", gamma=0.04)
+X_reduced = rbf_pca.fit_transform(X)
+
+# Selecting a Kernel and Choosing Hyperparameters
+from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+
+clf = Pipeline([
+        ("kpca", KernelPCA(n_components=2)),
+        ("log_reg", LogisticRegression())
+    ])
+
+param_grid = [{
+        "kpca__gamma": np.linspace(0.03, 0.05, 10),
+        "kpca__kernel": ["rbf", "sigmoid"]
+    }]
+
+grid_search = GridSearchCV(clf, param_grid, cv=3)
+grid_search.fit(X, y
+
+# LLE
+from sklearn.manifold import LocallyLinearEmbedding
+lle = LocallyLinearEmbedding(n_components=2, n_neighbors=10)
+X_reduced = lle.fit_transform(X)
+
+#======================================================================================#
+# K-Means
+from sklearn.cluster import KMeans
+k = 5
+kmeans = KMeans(n_clusters=k)
+y_pred = kmeans.fit_predict(X)
+kmeans.cluster_centers_
+
+# DBSCAN
+from sklearn.cluster import DBSCAN
+from sklearn.datasets import make_moons
+X, y = make_moons(n_samples=1000, noise=0.05)
+dbscan = DBSCAN(eps=0.05, min_samples=5)
+dbscan.fit(X)
+
+#======================================================================================#
