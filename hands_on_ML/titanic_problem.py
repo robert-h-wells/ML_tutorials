@@ -12,9 +12,11 @@ titanic2 = titanic.dropna(subset=['pclass', 'sex', 'age', 'sibsp', 'parch', 'far
 # Setup target and feature columns
 target = titanic2['survived']
 features = titanic2[['pclass', 'sex', 'age', 'fare', 'embarked']]
+feature_nam = ['pclass', 'sex', 'age', 'fare', 'embarked']
 
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer, make_column_transformer
+from sklearn.model_selection import cross_val_score
 
 
 # Preprocess data
@@ -37,12 +39,37 @@ from sklearn.svm import SVC
 
 svm_clf = SVC(gamma="auto")
 svm_clf.fit(X_train, y_train)
-
-from sklearn.model_selection import cross_val_score
-
 svm_scores = cross_val_score(svm_clf, X_train, y_train, cv=10)
-print(svm_scores.mean())
+print('SVM',svm_scores.mean())
 
-# Would like to look at other models and improve the models
+# Random Forest Regression
+from sklearn.ensemble import RandomForestRegressor
+forest_reg = RandomForestRegressor()
+forest_reg.fit(X_train, y_train)
+
+# Random Forest Classification
+from sklearn.ensemble import RandomForestClassifier
+
+forest_clf = RandomForestClassifier(n_estimators=100, random_state=42)
+forest_scores = cross_val_score(forest_clf, X_train, y_train, cv=10)
+print('Forest',forest_scores.mean())
+
 
 # Also want to rank the important attributes
+from sklearn.model_selection import GridSearchCV
+
+param_grid = [
+    {'n_estimators': [3, 10, 30], 'max_features': [2,3,4,5]},
+    {'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
+  ]
+
+grid_search = GridSearchCV(forest_clf, param_grid, cv=5,
+                           scoring='neg_mean_squared_error',
+                           return_train_score=True)
+
+grid_search.fit(X_train, y_train)
+
+grid_search.best_params_
+
+feature_importances = grid_search.best_estimator_.feature_importances_
+print(sorted(zip(feature_importances,feature_nam), reverse=True))
