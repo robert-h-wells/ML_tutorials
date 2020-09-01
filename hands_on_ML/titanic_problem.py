@@ -100,6 +100,17 @@ forest_cv_predic = cross_val_predict(forest_clf, X_train, y_train, cv=3)
 forest_scores = cross_val_score(forest_clf, X_train, y_train, cv=10, scoring='accuracy')
 print(forest_scores.mean())
 
+#========== Logistic Regression ==========#
+from sklearn.linear_model import LogisticRegression
+log_reg = LogisticRegression()
+log_reg.fit(X_train, y_train)
+log_predictions = log_reg.predict(X_train)
+log_cv_predic = cross_val_predict(log_reg, X_train, y_train, cv=3)
+
+log_scores = cross_val_score(log_reg, X_train, y_train, cv=10, scoring='accuracy')
+print(log_scores.mean())
+
+
 #=========== Rank Models ===========#     TO DO !!!
 from sklearn.metrics import confusion_matrix
 pred_val = svm_cv_predic
@@ -121,8 +132,6 @@ param_grid = [
     {'n_estimators': [3, 10, 30], 'max_features': [2,3,4,5]},
     {'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
   ]
-
-
 
 # Also want to rank the important attributes
 grid_search = GridSearchCV(forest_clf, param_grid, cv=5,
