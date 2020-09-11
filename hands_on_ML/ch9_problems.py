@@ -180,3 +180,21 @@ plot_faces(X_bad_faces, y_bad)
 
 
 # Problem 13
+pca = PCA(0.99)
+X_train_pca = pca.fit_transform(X_train)
+X_valid_pca = pca.transform(X_valid)
+X_test_pca = pca.transform(X_test)
+
+pca.n_components_
+
+# Find reconstruction error
+def reconstruction_errors(pca, X):
+    X_pca = pca.transform(X)
+    X_reconstructed = pca.inverse_transform(X_pca)
+    mse = np.square(X_reconstructed - X).mean(axis=-1)
+    return mse
+
+reconstruction_errors(pca, X_train).mean()
+
+# Look at bad faces reconstruction
+reconstruction_errors(pca, X_bad_faces).mean()
